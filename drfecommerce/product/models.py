@@ -34,17 +34,20 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = TreeForeignKey(
         "Category", null=True, blank=True, on_delete=models.SET_NULL
-     )
+    )
+    is_active = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name
 
 
-# class ProductLine(models.Model):
-#     price = models.DecimalField()
-#     sku = models.CharField()
-#     stock_quantity = models.IntegerField()
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+class ProductLine(models.Model):
+    price = models.DecimalField(decimal_places=2, max_digits=5)
+    # sku = Stock keeping unit
+    sku = models.CharField(max_length=100)
+    stock_quantity = models.IntegerField()
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
 
 
 # class ProductImage(models.Model):
