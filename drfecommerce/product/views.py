@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -32,20 +32,37 @@ class BrandView(viewsets.ViewSet):
 
 
 class ProductView(viewsets.ViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().where_is_active()
+    lookup_field = "slug"
 
     @extend_schema(responses=ProductSerializer)
     def list(self, request):
-        serializer = ProductSerializer(self.queryset, many=True)
+        serializer = ProductSerializer(self.queryset.select_related("category", "brand"), many=True)
         data = serializer.data
 
         return Response(data, status=status.HTTP_200_OK)
+
+    @extend_schema(responses=ProductSerializer)
+    def retrieve(self, request, slug=None):
+        # Use select_related with foreign keyes to minimize number of queries to DB by utilizing "SQL JOINS" and speed up the query
+        # Is not possible with "reverse foreign keys" as the "slug" from the ProductLine model
+
+        query = self.queryset.filter(slug=slug).select_related("category", "brand")
+        serializer = ProductSerializer(query, many=True)
+        data = serializer.data
+
+        if data:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(
         methods=["GET"],
         detail=False,
         url_path=r"category/(?P<category>\w+)/all",
     )
+
+    # Function to filter product by a category
     def product_list_by_category(self, request, category=None):
         serializer = ProductSerializer(
             self.queryset.filter(category__name=category), many=True
