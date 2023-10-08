@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Iterable
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from .fields import OrderField
@@ -77,26 +77,42 @@ class ProductLine(models.Model):
     objects = ActiveQueryset.as_manager()
 
     # Raises ValidationError if a user tries to create an order with ProductLine id x but that order already exists on ProductLine x
-    def clean_fields(self, exclude=None) -> None:
-        super().clean_fields(exclude=exclude)
+    def clean(self) -> None:
         qs = ProductLine.objects.filter(product=self.product)
-
         for obj in qs:
             if self.id != obj.id and self.order == obj.order:
                 raise ValidationError("Duplicate value.")
+
+    # Makes a full clean before saving and therefore calling "clean" method
+    def save(self, *args, **kwargs) -> None:
+        self.full_clean()
+        return super(ProductLine, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
         return str(self.order)
 
 
-# class ProductImage(models.Model):
-#     name = models.CharField()
-#     alternative_text = models.CharField()
-#     url = models.ImageField()
-#     product_line = models.ForeignKey(ProductLine)
+class ProductImage(models.Model):
+    alternative_text = models.CharField(max_length=100)
+    url = models.ImageField(upload_to=None, default="test.jpg")
+    product_line = models.ForeignKey(
+        ProductLine, on_delete=models.CASCADE, related_name="product_image"
+    )
+    order = OrderField(blank=True, unique_for_field="product_line")
 
-#     def __str__(self) -> str:
-#         return self.name
+    # Raises ValidationError if a user tries to create an order with ProductLine id x but that order already exists on ProductLine x
+    def clean(self) -> None:
+        qs = ProductImage.objects.filter(product_line=self.product_line)
+        for obj in qs:
+            if self.id != obj.id and self.order == obj.order:
+                raise ValidationError("Duplicate value.")
+
+    def save(self, *args, **kwargs) -> None:
+        self.full_clean()
+        return super(ProductImage, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return str(self.url)
 
 
 # class Attribute(models.Model):

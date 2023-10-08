@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # External Package
     "rest_framework",
     "drf_spectacular",
+    "django_filters",
     # Internal Apps
     "drfecommerce.product",
 ]
