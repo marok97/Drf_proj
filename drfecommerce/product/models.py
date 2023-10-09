@@ -41,6 +41,40 @@ class Category(MPTTModel):
         return self.name
 
 
+class Attribute(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(max_length=200, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class AttributeValue(models.Model):
+    value = models.CharField(max_length=100)
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="attribute_value"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.attribute.name}-{self.value}"
+
+
+class ProductLineAttributeValue(models.Model):
+    attribute_value = models.ForeignKey(
+        AttributeValue,
+        on_delete=models.CASCADE,
+        related_name="product_line_attribute_value_av",
+    )
+    product_line = models.ForeignKey(
+        "ProductLine",
+        on_delete=models.CASCADE,
+        related_name="product_line_attribute_value_pl",
+    )
+
+    class Meta:
+        unique_together = ["attribute_value", "product_line"]
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=255)
@@ -72,6 +106,12 @@ class ProductLine(models.Model):
 
     # Custom Field, takes in a unique field in this case the product object
     order = OrderField(blank=True, unique_for_field="product")
+
+    attribute_value = models.ManyToManyField(
+        AttributeValue,
+        through=ProductLineAttributeValue,
+        related_name="product_line_attribute_value",
+    )
 
     # Make the custom ActiveQueryset accessbile for the default manager
     objects = ActiveQueryset.as_manager()
@@ -113,15 +153,3 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return str(self.url)
-
-
-# class Attribute(models.Model):
-#     name = models.CharField()
-
-#     def __str__(self) -> str:
-#         return self.name
-
-
-# class AttributeValue(models.Model):
-#     value = models.CharField()
-#     attribute = models.ForeignKey(Attribute)

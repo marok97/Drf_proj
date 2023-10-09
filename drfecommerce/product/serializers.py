@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import Product, Category, Brand, ProductLine, ProductImage
+from .models import (
+    Product,
+    Category,
+    Brand,
+    ProductLine,
+    ProductImage,
+    Attribute,
+    AttributeValue,
+)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -27,9 +35,26 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ["url", "alternative_text", "order"]
 
+
+class AttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attribute
+        fields = ["name"]
+
+
+class AttributeValueSerializer(serializers.ModelSerializer):
+    attribute = AttributeSerializer(many=False)
+
+    class Meta:
+        model = AttributeValue
+        fields = ["attribute", "value"]
+
+
 class ProductLineSerializer(serializers.ModelSerializer):
     # Passes in the related product image by "related_name" in model. so called "reverse FK"
     product_image = ProductImageSerializer(many=True)
+    attribute_value = AttributeValueSerializer(many=True)
+
     class Meta:
         model = ProductLine
         exclude = ("id", "is_active", "product")

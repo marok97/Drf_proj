@@ -1,0 +1,145 @@
+[
+  {
+    "model": "product.brand",
+    "pk": 1,
+    "fields": { "name": "Gucci", "is_active": false }
+  },
+  {
+    "model": "product.brand",
+    "pk": 2,
+    "fields": { "name": "Prada", "is_active": false }
+  },
+  {
+    "model": "product.category",
+    "pk": 1,
+    "fields": {
+      "name": "Cat-1",
+      "parent": null,
+      "is_active": false,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 1,
+      "level": 0
+    }
+  },
+  {
+    "model": "product.category",
+    "pk": 2,
+    "fields": {
+      "name": "Cat-2",
+      "parent": null,
+      "is_active": false,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+  {
+    "model": "product.attribute",
+    "pk": 1,
+    "fields": { "name": "men-shoe-size", "description": "" }
+  },
+  {
+    "model": "product.attribute",
+    "pk": 2,
+    "fields": { "name": "women-shoe-size", "description": "" }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 1,
+    "fields": { "value": "10", "attribute": 1 }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 2,
+    "fields": { "value": "9", "attribute": 1 }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 3,
+    "fields": { "value": "11", "attribute": 1 }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 4,
+    "fields": { "value": "7", "attribute": 2 }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 5,
+    "fields": { "value": "6", "attribute": 2 }
+  },
+  {
+    "model": "product.attributevalue",
+    "pk": 6,
+    "fields": { "value": "8", "attribute": 2 }
+  },
+  {
+    "model": "product.productlineattributevalue",
+    "pk": 1,
+    "fields": { "attribute_value": 1, "product_line": 1 }
+  },
+  {
+    "model": "product.productlineattributevalue",
+    "pk": 2,
+    "fields": { "attribute_value": 2, "product_line": 2 }
+  },
+  {
+    "model": "product.product",
+    "pk": 1,
+    "fields": {
+      "name": "Gucci Shoe",
+      "slug": "p1",
+      "description": "Shoes from Gucci",
+      "is_digital": false,
+      "brand": 1,
+      "category": 1,
+      "is_active": true
+    }
+  },
+  {
+    "model": "product.productline",
+    "pk": 1,
+    "fields": {
+      "price": "100.00",
+      "sku": "1",
+      "stock_quantity": 20,
+      "product": 1,
+      "is_active": false,
+      "order": 1
+    }
+  },
+  {
+    "model": "product.productline",
+    "pk": 2,
+    "fields": {
+      "price": "100.00",
+      "sku": "2",
+      "stock_quantity": 10,
+      "product": 1,
+      "is_active": false,
+      "order": 2
+    }
+  },
+  {
+    "model": "product.productimage",
+    "pk": 1,
+    "fields": {
+      "alternative_text": "1",
+      "url": "test.jpg",
+      "product_line": 1,
+      "order": 1
+    }
+  },
+  {
+    "model": "product.productimage",
+    "pk": 2,
+    "fields": {
+      "alternative_text": "1",
+      "url": "test.jpg",
+      "product_line": 2,
+      "order": 1
+    }
+  }
+]
