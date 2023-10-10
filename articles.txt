@@ -1,0 +1,3 @@
+https://testdriven.io/blog/drf-serializers/
+https://www.sankalpjonna.com/learn-django/the-right-way-to-use-a-manytomanyfield-in-django
+https://docs.djangoproject.com/en/4.2/ref/models/querysets/ ----- search for select_related and prefetch_related
