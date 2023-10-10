@@ -104,6 +104,8 @@ class ProductLine(models.Model):
     )
     is_active = models.BooleanField(default=False)
 
+    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
+
     # Custom Field, takes in a unique field in this case the product object
     order = OrderField(blank=True, unique_for_field="product")
 
@@ -153,3 +155,25 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return str(self.url)
+
+
+class ProductType(models.Model):
+    name = models.CharField(max_length=100)
+    attribute = models.ManyToManyField(
+        Attribute, through="ProductTypeAttribute", related_name="product_type_attribute"
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class ProductTypeAttribute(models.Model):
+    product_type = models.ForeignKey(
+        ProductType, on_delete=models.CASCADE, related_name="product_type_attribute_pt"
+    )
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="product_type_attribute_a"
+    )
+
+    class Meta:
+        unique_together = ["product_type", "attribute"]

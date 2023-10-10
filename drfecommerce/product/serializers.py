@@ -39,7 +39,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
-        fields = ["name"]
+        fields = ["name", "id"]
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -47,17 +47,27 @@ class AttributeValueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AttributeValue
-        fields = ["attribute", "value"]
+        fields = "__all__"
 
 
 class ProductLineSerializer(serializers.ModelSerializer):
     # Passes in the related product image by "related_name" in model. so called "reverse FK"
-    product_image = ProductImageSerializer(many=True)
+    product_image = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     attribute_value = AttributeValueSerializer(many=True)
 
     class Meta:
         model = ProductLine
         exclude = ("id", "is_active", "product")
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        av_data = repr.pop("attribute_value")
+        av_values = {}
+        for key in av_data:
+            av_values.update({key["attribute"]["id"]: key["value"]})
+
+        repr.update({"specification": av_values})
+        return repr
 
 
 class ProductSerializer(serializers.ModelSerializer):
