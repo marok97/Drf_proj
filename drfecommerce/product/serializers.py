@@ -79,6 +79,8 @@ class ProductSerializer(serializers.ModelSerializer):
     # Passes in the related ProductLines by "related_name" in model. so called "reverse FK"
     product_line = ProductLineSerializer(many=True)
 
+    attribute = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
@@ -89,4 +91,23 @@ class ProductSerializer(serializers.ModelSerializer):
             "brand",
             "category",
             "product_line",
+            "product_type",
+            "attribute",
         ]
+
+    def get_attribute(self, instance):
+        attribute = Attribute.objects.filter(
+            product_type_attribute__product__id=instance.id
+        )
+
+        return AttributeSerializer(attribute, many=True).data
+    
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        av_data = repr.pop("attribute")
+        av_values = {}
+        for key in av_data:
+            av_values.update({key["id"]: key["name"]})
+
+        repr.update({"type specification": av_values})
+        return repr

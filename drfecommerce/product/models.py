@@ -74,6 +74,34 @@ class ProductLineAttributeValue(models.Model):
     class Meta:
         unique_together = ["attribute_value", "product_line"]
 
+    # Validate that a ProductLine dont have duplicate attributes ex: shoe size 12 and shoe size 11
+    def clean(self) -> None:
+        # Check if ProductLineAttributeValue exists in the ProductLine
+        query = (
+            ProductLineAttributeValue.objects.filter(
+                attribute_value=self.attribute_value
+            )
+            .filter(product_line=self.product_line)
+            .exists()
+        )
+
+        # If it does not exists = a new record or some record to update
+        if not query:
+            # Get all the attribute ids that is associated to the ProdutLine
+            attr_query = Attribute.objects.filter(
+                attribute_value__product_line_attribute_value=self.product_line
+            ).values_list("pk", flat=True)
+
+            # If the attribute id is in the attr_query raise validation error.
+            if self.attribute_value.attribute.id in list(attr_query):
+                raise ValidationError("Dupicate attributes exists")
+
+        return super().clean()
+
+    def save(self, *args, **kwargs) -> None:
+        self.full_clean()
+        return super(ProductLineAttributeValue, self).save(*args, **kwargs)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -85,6 +113,7 @@ class Product(models.Model):
         "Category", null=True, blank=True, on_delete=models.SET_NULL
     )
     is_active = models.BooleanField(default=False)
+    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
 
     # Default manager for admin
     # Make the custom ActiveQueryset accessbile for the default manager
@@ -103,8 +132,6 @@ class ProductLine(models.Model):
         Product, on_delete=models.CASCADE, related_name="product_line"
     )
     is_active = models.BooleanField(default=False)
-
-    product_type = models.ForeignKey("ProductType", on_delete=models.PROTECT)
 
     # Custom Field, takes in a unique field in this case the product object
     order = OrderField(blank=True, unique_for_field="product")

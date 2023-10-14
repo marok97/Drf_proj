@@ -104,6 +104,11 @@
     "fields": { "value": "12", "attribute": 3 }
   },
   {
+    "model": "product.attributevalue",
+    "pk": 5,
+    "fields": { "value": "Blue", "attribute": 4 }
+  },
+  {
     "model": "product.productlineattributevalue",
     "pk": 1,
     "fields": { "attribute_value": 1, "product_line": 3 }
@@ -124,6 +129,16 @@
     "fields": { "attribute_value": 4, "product_line": 1 }
   },
   {
+    "model": "product.productlineattributevalue",
+    "pk": 5,
+    "fields": { "attribute_value": 5, "product_line": 2 }
+  },
+  {
+    "model": "product.productlineattributevalue",
+    "pk": 6,
+    "fields": { "attribute_value": 4, "product_line": 2 }
+  },
+  {
     "model": "product.product",
     "pk": 1,
     "fields": {
@@ -133,7 +148,8 @@
       "is_digital": false,
       "brand": 2,
       "category": 1,
-      "is_active": true
+      "is_active": true,
+      "product_type": 1
     }
   },
   {
@@ -146,7 +162,8 @@
       "is_digital": false,
       "brand": 1,
       "category": 2,
-      "is_active": true
+      "is_active": true,
+      "product_type": 2
     }
   },
   {
@@ -158,7 +175,6 @@
       "stock_quantity": 20,
       "product": 1,
       "is_active": true,
-      "product_type": 1,
       "order": 1
     }
   },
@@ -171,7 +187,6 @@
       "stock_quantity": 1,
       "product": 1,
       "is_active": true,
-      "product_type": 1,
       "order": 2
     }
   },
@@ -184,7 +199,6 @@
       "stock_quantity": 123,
       "product": 2,
       "is_active": false,
-      "product_type": 2,
       "order": 1
     }
   },

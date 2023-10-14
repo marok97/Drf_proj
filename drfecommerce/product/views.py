@@ -37,9 +37,11 @@ class ProductView(viewsets.ViewSet):
     @extend_schema(responses=ProductSerializer)
     def list(self, request):
         serializer = ProductSerializer(
-            self.queryset.select_related("category", "brand").prefetch_related(
-                Prefetch("product_line__product_image")
-            ),
+            self.queryset.select_related("category", "brand")
+            # From Product -> ProductLine -> ProductImage
+            .prefetch_related(Prefetch("product_line__product_image"))
+            # From Product -> ProductLine -> AttributeValue -> Attribute
+            .prefetch_related((Prefetch("product_line__attribute_value__attribute"))),
             many=True,
         )
         data = serializer.data
@@ -55,6 +57,7 @@ class ProductView(viewsets.ViewSet):
             self.queryset.filter(slug=slug)
             .select_related("category", "brand")
             .prefetch_related(Prefetch("product_line__product_image"))
+            .prefetch_related((Prefetch("product_line__attribute_value")))
         )
         serializer = ProductSerializer(query, many=True)
         data = serializer.data
